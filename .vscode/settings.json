@@ -1,0 +1,14 @@
+{
+  // Включаем интеграцию oxlint
+  "oxc.enable": true,
+  "oxc.enable.oxlint": true,
+
+  // Настраиваем автоматическое исправление ошибок при сохранении файла
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "always"
+  },
+
+  // Отключаем стандартный ESLint для этого проекта, чтобы избежать дублирования ошибок
+  "eslint.enable": false,
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
+}
