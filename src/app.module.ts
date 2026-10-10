@@ -13,6 +13,7 @@ import { FirebaseModule } from '@infrastructure/firebase/firebase.module.js';
 import { QueueModule } from '@infrastructure/queue/queue.module.js';
 import { StripeModule } from '@infrastructure/stripe/stripe.module.js';
 import { AuthModule } from '@modules/auth/auth.module.js';
+import { NotificationsModule } from '@modules/notifications/notifications.module.js';
 import { UsersModule } from '@modules/users/users.module.js';
 import { WebhooksModule } from '@modules/webhooks/webhooks.module.js';
 import { LoggerModule } from 'nestjs-pino';
@@ -43,6 +44,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
       inject: [ConfigService],
       useFactory: createLoggerConfig,
     }),
+    NotificationsModule,
     QueueModule,
     DatabaseModule,
     AuthModule,
