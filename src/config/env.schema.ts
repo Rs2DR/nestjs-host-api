@@ -21,4 +21,6 @@ export const envSchema = z.object({
 
   REDIS_HOST: z.string().min(1),
   REDIS_PORT: z.coerce.number().int().min(1).max(65535),
+
+  LOGGER_HTTP_AUTO_LOGGING: z.coerce.boolean(),
 });

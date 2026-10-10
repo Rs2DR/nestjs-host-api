@@ -2,16 +2,16 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import Stripe from 'stripe';
 
-import { type PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
-import { STRIPE_CLIENT, STRIPE_ERRORS } from './payments.constants.js';
-import { MODULE_OPTIONS_TOKEN } from './payments.module-definition.js';
+import { type StripeModuleOptions } from './interfaces/stripe-module-options.interface.js';
+import { STRIPE_CLIENT, STRIPE_ERRORS } from './stripe.constants.js';
+import { MODULE_OPTIONS_TOKEN } from './stripe.module-definition.js';
 
 @Injectable()
-export class PaymentsService {
+export class StripeService {
   constructor(
     @Inject(STRIPE_CLIENT) private readonly stripe: Stripe,
     @Inject(MODULE_OPTIONS_TOKEN)
-    private readonly options: PaymentsModuleOptions,
+    private readonly options: StripeModuleOptions,
   ) {}
 
   async createPaymentIntent(
