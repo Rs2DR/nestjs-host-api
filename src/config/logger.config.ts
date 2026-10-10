@@ -10,12 +10,16 @@ import type { Params } from 'nestjs-pino';
 
 export function createLoggerConfig(configService: ConfigService): Params {
   const nodeEnv = configService.getOrThrow<string>('NODE_ENV');
+  const httpAutoLogging =
+    configService.getOrThrow<string>('LOGGER_HTTP_AUTO_LOGGING') === 'true';
 
   const isDevelopment = nodeEnv !== 'production';
 
   return {
     pinoHttp: {
       name: LOGGER_NAME,
+
+      autoLogging: httpAutoLogging,
 
       level: isDevelopment
         ? LOGGER_LEVELS.development

@@ -1,10 +1,10 @@
 import type { ConfigService } from '@nestjs/config';
 
-import { PaymentsModuleOptions } from '@modules/payments/interfaces/payments-module-options.interface.js';
+import { StripeModuleOptions } from '@infrastructure/stripe/interfaces/stripe-module-options.interface.js';
 
-export function createPaymentsConfig(
+export function createStripeConfig(
   configService: ConfigService,
-): Promise<PaymentsModuleOptions> | PaymentsModuleOptions {
+): Promise<StripeModuleOptions> | StripeModuleOptions {
   return {
     apiKey: configService.getOrThrow<string>('STRIPE_SECRET_KEY'),
     webhookSecret: configService.getOrThrow<string>('STRIPE_WEBHOOK_SECRET'),
