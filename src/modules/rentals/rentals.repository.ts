@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { and, asc, desc, eq, gt, lte, or } from 'drizzle-orm';
 
 import type { Database } from '@infrastructure/database/database.types.js';
-import { rentals, type Rental } from '@infrastructure/database/schema/rentals.js';
+import { payments } from '@infrastructure/database/schema/payments.js';
+import {
+  type Rental,
+  rentals,
+} from '@infrastructure/database/schema/rentals.js';
 import { serverSlots } from '@infrastructure/database/schema/server-slots.js';
 import { servers } from '@infrastructure/database/schema/servers.js';
 import { userDevices } from '@infrastructure/database/schema/user-devices.js';
+import { and, asc, desc, eq, gt, lte, notExists, or } from 'drizzle-orm';
 
 export interface CreateReservationInput {
   userId: string;
@@ -23,11 +27,12 @@ type CreateReservationResult =
 export class RentalsRepository {
   constructor(@InjectDrizzle() private readonly db: Database) {}
 
-  async create(input: CreateReservationInput): Promise<CreateReservationResult> {
+  async create(
+    input: CreateReservationInput,
+  ): Promise<CreateReservationResult> {
     return this.db.transaction(async (tx) => {
       const now = new Date();
 
-      // Release expired reservations before trying to reserve this slot again.
       await tx
         .update(rentals)
         .set({ status: 'cancelled', updatedAt: now })
@@ -88,7 +93,9 @@ export class RentalsRepository {
         totalAmount <= 0 ||
         totalAmount > 2_147_483_647
       ) {
-        throw new Error('Calculated rental amount is outside the supported range');
+        throw new Error(
+          'Calculated rental amount is outside the supported range',
+        );
       }
 
       const [rental] = await tx
@@ -106,9 +113,7 @@ export class RentalsRepository {
         })
         .returning();
 
-      return rental
-        ? { rental }
-        : { rental: null, reason: 'not_found' };
+      return rental ? { rental } : { rental: null, reason: 'not_found' };
     });
   }
 
@@ -153,8 +158,6 @@ export class RentalsRepository {
 
     if (activated) return activated;
 
-    // A second webhook can race the first one. Treat an already-active rental
-    // as success so queue scheduling can be retried safely.
     const latest = await this.findById(id);
     return latest?.status === 'active' ? latest : null;
   }
@@ -163,15 +166,18 @@ export class RentalsRepository {
     const [cancelled] = await this.db
       .update(rentals)
       .set({ status: 'cancelled', updatedAt: new Date() })
-      .where(
-        and(eq(rentals.id, id), eq(rentals.status, 'pending_payment')),
-      )
+      .where(and(eq(rentals.id, id), eq(rentals.status, 'pending_payment')))
       .returning({ id: rentals.id });
 
     return Boolean(cancelled);
   }
 
   async cancelPendingIfExpired(id: string, now = new Date()): Promise<boolean> {
+    const successfulPayment = this.db
+      .select({ id: payments.id })
+      .from(payments)
+      .where(and(eq(payments.rentalId, id), eq(payments.status, 'succeeded')));
+
     const [cancelled] = await this.db
       .update(rentals)
       .set({ status: 'cancelled', updatedAt: now })
@@ -180,6 +186,7 @@ export class RentalsRepository {
           eq(rentals.id, id),
           eq(rentals.status, 'pending_payment'),
           lte(rentals.paymentExpiresAt, now),
+          notExists(successfulPayment),
         ),
       )
       .returning({ id: rentals.id });
@@ -243,7 +250,6 @@ export class RentalsRepository {
         currency: rentals.currency,
         startedAt: rentals.startedAt,
         endsAt: rentals.endsAt,
-        createdAt: rentals.createdAt,
         server: {
           id: servers.id,
           name: servers.name,

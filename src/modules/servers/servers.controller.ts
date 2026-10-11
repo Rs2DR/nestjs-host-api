@@ -1,6 +1,7 @@
 import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiParam } from '@nestjs/swagger';
 
+import { Auth } from '@common/decorators/auth.decorator.js';
 import { ZodResponse } from 'nestjs-zod';
 
 import {
@@ -10,6 +11,7 @@ import {
 } from './dto/server-response.dto.js';
 import { ServersService } from './servers.service.js';
 
+@Auth()
 @Controller('servers')
 export class ServersController {
   constructor(private readonly serversService: ServersService) {}

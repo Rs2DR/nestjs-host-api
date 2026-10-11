@@ -16,7 +16,7 @@ export class PaymentsController {
 
   @Post()
   @ZodResponse({ type: PaymentResponseDto })
-  createPaymentIntent(
+  async createPaymentIntent(
     @CurrentUser('sub') userId: JwtPayload['sub'],
     @Body() dto: CreatePaymentDto,
   ) {

@@ -13,4 +13,4 @@ export const NameSchema = z.string().min(2, {
 
 export const IdSchema = z.uuid('Invalid ID format');
 
-export const TimestampSchema = z.coerce.date();
+export const TimestampSchema = z.iso.datetime();

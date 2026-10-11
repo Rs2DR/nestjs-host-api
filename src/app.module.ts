@@ -15,6 +15,9 @@ import { QueueModule } from '@infrastructure/queue/queue.module.js';
 import { StripeModule } from '@infrastructure/stripe/stripe.module.js';
 import { AuthModule } from '@modules/auth/auth.module.js';
 import { NotificationsModule } from '@modules/notifications/notifications.module.js';
+import { PaymentsModule } from '@modules/payments/payments.module.js';
+import { RentalsModule } from '@modules/rentals/rentals.module.js';
+import { ServersModule } from '@modules/servers/servers.module.js';
 import { UsersModule } from '@modules/users/users.module.js';
 import { WebhooksModule } from '@modules/webhooks/webhooks.module.js';
 import { LoggerModule } from 'nestjs-pino';
@@ -25,6 +28,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
+      expandVariables: true,
       validationSchema: envSchema,
     }),
     JwtModule.registerAsync({
@@ -46,6 +50,9 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
       inject: [ConfigService],
       useFactory: createLoggerConfig,
     }),
+    PaymentsModule,
+    RentalsModule,
+    ServersModule,
     NotificationsModule,
     QueueModule,
     DatabaseModule,

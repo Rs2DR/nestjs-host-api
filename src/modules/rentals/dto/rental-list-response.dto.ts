@@ -1,7 +1,6 @@
+import { IdSchema, TimestampSchema } from '@common/schemas/common.schema.js';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-
-import { IdSchema } from '@common/schemas/common.schema.js';
 
 export const RentalListItemSchema = z.object({
   id: IdSchema,
@@ -10,9 +9,8 @@ export const RentalListItemSchema = z.object({
   hourlyRate: z.number().int().positive(),
   totalAmount: z.number().int().positive(),
   currency: z.string().length(3),
-  startedAt: z.date().nullable(),
-  endsAt: z.date().nullable(),
-  createdAt: z.date(),
+  startedAt: TimestampSchema.nullable(),
+  endsAt: TimestampSchema.nullable(),
   server: z.object({
     id: IdSchema,
     name: z.string(),

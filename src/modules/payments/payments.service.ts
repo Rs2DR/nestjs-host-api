@@ -70,7 +70,7 @@ export class PaymentsService {
         clientSecret: paymentIntent.client_secret,
         amount: payment.amount,
         currency: payment.currency,
-        paymentExpiresAt: rental.paymentExpiresAt,
+        paymentExpiresAt: rental.paymentExpiresAt?.toISOString() ?? null,
       };
     } catch (error: unknown) {
       if (paymentIntent) {
