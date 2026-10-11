@@ -32,15 +32,5 @@ export const relations = defineRelations(schema, (r) => ({
       to: r.servers.id,
       optional: false,
     }),
-
-    payments: r.many.payments(),
-  },
-
-  payments: {
-    rental: r.one.rentals({
-      from: r.payments.rentalId,
-      to: r.rentals.id,
-      optional: false,
-    }),
   },
 }));
