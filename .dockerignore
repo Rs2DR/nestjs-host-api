@@ -1,0 +1,43 @@
+# Зависимости и локальная сборка
+node_modules
+dist
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Логи и папки тестирования
+logs
+*.log
+coverage
+.nyc_output
+
+# Репозиторий и служебные файлы Git
+.git
+.gitignore
+
+# Файлы Docker
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+
+# Среда разработки и конфигурации IDE
+.env
+.env.*
+!.env.example
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Разное (линтеры, документация, логи сборки)
+.editorconfig
+.eslintignore
+.eslintrc.js
+.oxlint.json
+.prettierrc
+README.md

@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 
+import { PaymentsModule } from '@modules/payments/payments.module.js';
+
 import { StripeWebhookController } from './stripe-webhook.controller.js';
 
 @Module({
-  imports: [],
+  imports: [PaymentsModule],
   controllers: [StripeWebhookController],
 })
 export class WebhooksModule {}

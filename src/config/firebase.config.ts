@@ -1,6 +1,10 @@
 import type { ConfigService } from '@nestjs/config';
 
-export function createFirebaseConfig(configService: ConfigService) {
+import { FirebaseModuleOptions } from '@infrastructure/firebase/interfaces/firebase-module-options.interface.js';
+
+export function createFirebaseConfig(
+  configService: ConfigService,
+): FirebaseModuleOptions {
   return {
     credential: {
       projectId: configService.getOrThrow<string>('FIREBASE_PROJECT_ID'),
@@ -11,7 +15,5 @@ export function createFirebaseConfig(configService: ConfigService) {
         .getOrThrow<string>('FIREBASE_PRIVATE_KEY')
         .replace(/\\n/g, '\n'),
     },
-
-    databaseURL: configService.get<string>('FIREBASE_DATABASE_URL'),
   };
 }

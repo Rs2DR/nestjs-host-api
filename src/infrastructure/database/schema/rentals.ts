@@ -1,21 +1,16 @@
 import { sql } from 'drizzle-orm';
 import * as p from 'drizzle-orm/pg-core';
 
+import { serverSlots } from './server-slots.js';
 import { servers } from './servers.js';
 import { users } from './users.js';
 
-export const RENTAL_STATUSES = [
+export const rentalStatusEnum = p.pgEnum('rental_status', [
   'pending_payment',
   'active',
-  'completed',
+  'expired',
   'cancelled',
-  'payment_failed',
-  'reservation_expired',
-] as const;
-
-export type RentalStatus = (typeof RENTAL_STATUSES)[number];
-
-export const rentalStatusEnum = p.pgEnum('rental_status', RENTAL_STATUSES);
+]);
 
 export const rentals = p.pgTable(
   'rentals',
@@ -24,49 +19,27 @@ export const rentals = p.pgTable(
     userId: p
       .uuid('user_id')
       .notNull()
-      .references(() => users.id, {
-        onDelete: 'restrict',
-      }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     serverId: p
       .uuid('server_id')
       .notNull()
-      .references(() => servers.id, {
-        onDelete: 'restrict',
-      }),
+      .references(() => servers.id, { onDelete: 'restrict' }),
+    slotId: p
+      .uuid('slot_id')
+      .notNull()
+      .references(() => serverSlots.id, { onDelete: 'restrict' }),
     status: rentalStatusEnum('status').notNull().default('pending_payment'),
     hours: p.integer('hours').notNull(),
-
-    hourlyPrice: p
-      .numeric('hourly_price', {
-        precision: 12,
-        scale: 4,
-      })
-      .notNull(),
-    totalAmount: p
-      .numeric('total_amount', {
-        precision: 12,
-        scale: 2,
-      })
-      .notNull(),
-    currency: p.char('currency', { length: 3 }).notNull(),
-
-    reservationExpiresAt: p
-      .timestamp('reservation_expires_at', {
-        withTimezone: true,
-      })
-      .notNull(),
-    startedAt: p.timestamp('started_at', {
-      withTimezone: true,
-    }),
-    endsAt: p.timestamp('ends_at', {
-      withTimezone: true,
-    }),
-
+    hourlyRate: p.integer('hourly_rate').notNull(),
+    totalAmount: p.integer('total_amount').notNull(),
+    currency: p.varchar('currency', { length: 3 }).notNull(),
+    paymentExpiresAt: p.timestamp('payment_expires_at', { withTimezone: true }),
+    startedAt: p.timestamp('started_at', { withTimezone: true }),
+    endsAt: p.timestamp('ends_at', { withTimezone: true }),
     createdAt: p
       .timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
-
     updatedAt: p
       .timestamp('updated_at', { withTimezone: true })
       .notNull()
@@ -75,15 +48,32 @@ export const rentals = p.pgTable(
   },
   (table) => [
     p
-      .uniqueIndex('rentals_one_open_per_server_idx')
-      .on(table.serverId)
+      .uniqueIndex('rentals_one_open_rental_per_slot_unique')
+      .on(table.slotId)
       .where(sql`${table.status} IN ('pending_payment', 'active')`),
-    p.check('rentals_hours_check', sql`${table.hours} > 0`),
-    p.check('rentals_hourly_price_check', sql`${table.hourlyPrice} > 0`),
-    p.check('rentals_total_amount_check', sql`${table.totalAmount} >= 0`),
+    p.index('rentals_user_created_idx').on(table.userId, table.createdAt),
+    p.index('rentals_status_end_time_idx').on(table.status, table.endsAt),
+    p.check('rentals_hours_positive_check', sql`${table.hours} > 0`),
+    p.check('rentals_hourly_rate_positive_check', sql`${table.hourlyRate} > 0`),
     p.check(
-      'rentals_period_check',
-      sql`${table.endsAt} IS NULL OR ${table.startedAt} IS NULL OR ${table.endsAt} > ${table.startedAt}`,
+      'rentals_total_amount_positive_check',
+      sql`${table.totalAmount} > 0`,
+    ),
+    p.check(
+      'rentals_currency_lowercase_check',
+      sql`${table.currency} = lower(${table.currency})`,
+    ),
+    p.check(
+      'rentals_pending_has_expiry_check',
+      sql`${table.status} <> 'pending_payment' OR ${table.paymentExpiresAt} IS NOT NULL`,
+    ),
+    p.check(
+      'rentals_active_has_dates_check',
+      sql`${table.status} <> 'active' OR (
+        ${table.startedAt} IS NOT NULL AND
+        ${table.endsAt} IS NOT NULL AND
+        ${table.endsAt} > ${table.startedAt}
+      )`,
     ),
   ],
 );

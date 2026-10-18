@@ -3,7 +3,6 @@ import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { Auth } from '@common/decorators/auth.decorator.js';
 import { CurrentUser } from '@common/decorators/user.decorator.js';
 import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
-import { User } from '@infrastructure/database/schema/users.js';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ProfileResponseDto } from './dto/profile-response.dto.js';

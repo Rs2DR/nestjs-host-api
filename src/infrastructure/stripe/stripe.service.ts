@@ -1,7 +1,8 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 
+import type { CreatePaymentIntentParams } from './interfaces/create-payment-intent-parmas.interface.js';
 import { type StripeModuleOptions } from './interfaces/stripe-module-options.interface.js';
 import { STRIPE_CLIENT, STRIPE_ERRORS } from './stripe.constants.js';
 import { MODULE_OPTIONS_TOKEN } from './stripe.module-definition.js';
@@ -14,11 +15,11 @@ export class StripeService {
     private readonly options: StripeModuleOptions,
   ) {}
 
-  async createPaymentIntent(
-    amount: number,
-    currency: string,
-    metadata: Record<string, string>,
-  ) {
+  async createPaymentIntent({
+    amount,
+    currency,
+    metadata,
+  }: CreatePaymentIntentParams) {
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount,
       currency,
@@ -26,10 +27,18 @@ export class StripeService {
       metadata,
     });
 
-    return {
-      paymentIntentId: paymentIntent.id,
-      clientSecret: paymentIntent.client_secret,
-    };
+    return paymentIntent;
+  }
+
+  async cancelPaymentIntent(paymentIntentId: string) {
+    return this.stripe.paymentIntents.cancel(paymentIntentId);
+  }
+
+  async refundPaymentIntent(paymentIntentId: string) {
+    return this.stripe.refunds.create(
+      { payment_intent: paymentIntentId },
+      { idempotencyKey: `rental-refund-${paymentIntentId}` },
+    );
   }
 
   constructWebhookEvent(rawBody: Buffer | undefined, signature: string) {
