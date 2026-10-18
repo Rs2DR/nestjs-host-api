@@ -1,0 +1,63 @@
+services:
+  - type: web
+    name: prod-api
+    env: docker
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_USER
+        fromDatabase:
+          name: prod-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: prod-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: prod-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: prod-postgres
+          property: port
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prod-postgres
+          property: connectionString
+      - key: REDIS_HOST
+        fromService:
+          type: kv
+          name: prod-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: kv
+          name: prod-redis
+          property: port
+
+      - key: LOGGER_HTTP_AUTO_LOGGING
+        value: "false"
+      - key: JWT_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+
+databases:
+  - name: prod-postgres
+    plan: free
+    databaseName: host
+    user: postgres
+
+kv:
+  - name: prod-redis
+    plan: free

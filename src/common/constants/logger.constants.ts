@@ -1,6 +1,6 @@
 import type { Level } from 'pino';
 
-export const LOGGER_NAME = 'park-api';
+export const LOGGER_NAME = 'host-api';
 
 export const LOGGER_LEVELS = {
   development: 'debug',

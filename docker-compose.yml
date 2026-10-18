@@ -1,42 +1,58 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: park-application-postgres
+    container_name: host-application-postgres
     restart: unless-stopped
-
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: park
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '5432:5432'
-
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
-
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d park"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:latest
-    container_name: park-application-redis
+    container_name: host-application-redis
     restart: unless-stopped
-
+    env_file:
+      - .env
     ports:
-      - '6379:6379'
-
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis_data:/data
-
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: host-application-api
+    restart: unless-stopped
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env 
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:

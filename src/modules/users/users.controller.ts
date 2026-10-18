@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 
 import { Auth } from '@common/decorators/auth.decorator.js';
 import { CurrentUser } from '@common/decorators/user.decorator.js';
-import { User } from '@infrastructure/database/schema/users.js';
+import { JwtPayload } from '@common/interfaces/jwt-payload.interfaces.js';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ProfileResponseDto } from './dto/profile-response.dto.js';
@@ -18,14 +18,14 @@ export class UsersController {
 
   @Get('me')
   @ZodResponse({ type: ProfileResponseDto })
-  async getProfile(@CurrentUser('sub') userId: User['id']) {
+  async getProfile(@CurrentUser('sub') userId: JwtPayload['sub']) {
     return this.usersService.getProfile(userId);
   }
 
   @Post('me/devices')
   @ZodResponse({ type: RegisterDeviceResponseDto })
   async registerDevice(
-    @CurrentUser('sub') userId: User['id'],
+    @CurrentUser('sub') userId: JwtPayload['sub'],
     @Body() body: RegisterDeviceDto,
   ) {
     return this.usersService.registerDevice(userId, body.fcmToken);
@@ -33,7 +33,7 @@ export class UsersController {
 
   @Delete('me/devices')
   async removeDevice(
-    @CurrentUser('sub') userId: User['id'],
+    @CurrentUser('sub') userId: JwtPayload['sub'],
     @Body() body: RemoveDeviceDto,
   ) {
     return this.usersService.removeDevice(userId, body.fcmToken);

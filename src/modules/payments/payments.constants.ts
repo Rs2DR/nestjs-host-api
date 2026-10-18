@@ -1,7 +1,5 @@
-export const STRIPE_CLIENT = Symbol('STRIPE_CLIENT');
-
-export const STRIPE_ERRORS = {
-  RAW_BODY_MISSING: 'Stripe raw body is missing',
-  SIGNATURE_MISSING: 'Stripe signature is missing',
-  INVALID_WEBHOOK_SIGNATURE: 'Invalid Stripe webhook signature',
+export const PAYMENT_ERRORS = {
+  NOT_FOUND: 'Payment was not found',
+  CREATION_FAILED: 'Unable to create the payment session',
+  CONFIRMATION_FAILED: 'Unable to confirm the payment',
 } as const;

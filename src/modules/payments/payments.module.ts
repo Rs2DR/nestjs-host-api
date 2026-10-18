@@ -1,27 +1,15 @@
-import { Module, Provider } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import Stripe from 'stripe';
+import { RentalsModule } from '@modules/rentals/rentals.module.js';
 
-import { PaymentsModuleOptions } from './interfaces/payments-module-options.interface.js';
-import { STRIPE_CLIENT } from './payments.constants.js';
-import {
-  ConfigurableModuleClass,
-  MODULE_OPTIONS_TOKEN,
-} from './payments.module-definition.js';
+import { PaymentsController } from './payments.controller.js';
+import { PaymentsRepository } from './payments.repository.js';
 import { PaymentsService } from './payments.service.js';
 
-const stripeProvider: Provider = {
-  provide: STRIPE_CLIENT,
-  inject: [MODULE_OPTIONS_TOKEN],
-  useFactory: (options: PaymentsModuleOptions) => {
-    return new Stripe(options.apiKey, {
-      apiVersion: options.apiVersion as any,
-    });
-  },
-};
-
 @Module({
-  providers: [stripeProvider, PaymentsService],
+  imports: [RentalsModule],
+  controllers: [PaymentsController],
+  providers: [PaymentsRepository, PaymentsService],
   exports: [PaymentsService],
 })
-export class PaymentsModule extends ConfigurableModuleClass {}
+export class PaymentsModule {}
