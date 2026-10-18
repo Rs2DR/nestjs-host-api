@@ -60,12 +60,15 @@ services:
         sync: false
       - key: FIREBASE_PRIVATE_KEY
         sync: false
+      - key: QUEUE_DASHBOARD_USERNAME
+        sync: false
+      - key: QUEUE_DASHBOARD_PASSWORD
+        sync: false
 
   # 2. Настройка Redis (Key Value)
   - type: keyvalue
     name: prod-redis
     plan: free
-    # Защищаем базу: пустой список разрешает доступ только внутренним сервисам Render
     ipAllowList: [] 
 
 # 3. База данных Postgres
@@ -73,4 +76,4 @@ databases:
   - name: prod-postgres
     plan: free
     databaseName: host
-    user: db_user # Имя 'postgres' было зарезервировано, заменили на разрешенное
+    user: db_user
