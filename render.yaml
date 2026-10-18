@@ -1,11 +1,15 @@
 services:
+  # 1. Наш бэкенд NestJS
   - type: web
     name: prod-api
     env: docker
     plan: free
     envVars:
+      # Общие настройки
       - key: NODE_ENV
         value: production
+
+      # Динамические переменные для Postgres
       - key: DB_USER
         fromDatabase:
           name: prod-postgres
@@ -26,19 +30,24 @@ services:
         fromDatabase:
           name: prod-postgres
           property: connectionString
+
+      # Динамические переменные для Redis (тип изменен на redis для совместимости с fromService)
       - key: REDIS_HOST
         fromService:
-          type: kv
+          type: redis
           name: prod-redis
           property: host
       - key: REDIS_PORT
         fromService:
-          type: kv
+          type: redis
           name: prod-redis
           property: port
 
+      # Логгер
       - key: LOGGER_HTTP_AUTO_LOGGING
         value: "false"
+
+      # Секреты (Значения введете вручную в панели Render)
       - key: JWT_SECRET
         sync: false
       - key: STRIPE_SECRET_KEY
@@ -52,12 +61,16 @@ services:
       - key: FIREBASE_PRIVATE_KEY
         sync: false
 
+  # 2. Настройка Redis (Key Value)
   - type: keyvalue
     name: prod-redis
     plan: free
+    # Защищаем базу: пустой список разрешает доступ только внутренним сервисам Render
+    ipAllowList: [] 
 
+# 3. База данных Postgres
 databases:
   - name: prod-postgres
     plan: free
     databaseName: host
-    user: postgres
+    user: db_user # Имя 'postgres' было зарезервировано, заменили на разрешенное
