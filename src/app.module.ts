@@ -4,7 +4,7 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 
-import { envSchema } from '@config/env.schema.js';
+import { envSchema } from '@config/env/env.schema.js';
 import { createFirebaseConfig } from '@config/firebase.config.js';
 import { createJwtConfig } from '@config/jwt.config.js';
 import { createLoggerConfig } from '@config/logger.config.js';
