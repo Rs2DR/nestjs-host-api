@@ -52,12 +52,12 @@ services:
       - key: FIREBASE_PRIVATE_KEY
         sync: false
 
+  - type: keyvalue
+    name: prod-redis
+    plan: free
+
 databases:
   - name: prod-postgres
     plan: free
     databaseName: host
     user: postgres
-
-kv:
-  - name: prod-redis
-    plan: free
