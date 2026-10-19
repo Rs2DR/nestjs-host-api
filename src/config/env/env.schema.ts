@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 import { ENV_ERRORS } from './env.errors.js';
 
-const requiredString = (error: string) => z.string().trim().min(1, error);
+const requiredString = (error?: string) => z.string().trim().min(1, error);
 
-const portSchema = (error: string) =>
+const portSchema = (error?: string) =>
   z.coerce.number().int(error).min(1, error).max(65535, error);
 
 export const envSchema = z.object({
@@ -23,6 +23,7 @@ export const envSchema = z.object({
 
   REDIS_HOST: requiredString(ENV_ERRORS.REDIS_HOST),
   REDIS_PORT: portSchema(ENV_ERRORS.REDIS_PORT).default(6379),
+  REDIS_PASSWORD: requiredString().optional(),
 
   JWT_SECRET: z.string().min(32, {
     error: ({ minimum }) => ENV_ERRORS.JWT_SECRET_MIN(minimum),

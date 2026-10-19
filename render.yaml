@@ -42,6 +42,11 @@ services:
           type: redis
           name: prod-redis
           property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: prod-redis
+          property: password
 
       # Логгер
       - key: LOGGER_HTTP_AUTO_LOGGING
