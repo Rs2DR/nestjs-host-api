@@ -17,6 +17,9 @@ import { QUEUE_DASHBOARD_ROUTE } from './queue.constants.js';
         connection: {
           host: configService.getOrThrow<string>('REDIS_HOST'),
           port: configService.getOrThrow<number>('REDIS_PORT'),
+          tls: {
+            rejectUnauthorized: false,
+          },
         },
       }),
     }),
