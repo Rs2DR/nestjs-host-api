@@ -10,8 +10,8 @@ interface RentalJobData {
   rentalId: string;
 }
 
-@Processor(RENTALS_QUEUE)
 @Injectable()
+@Processor(RENTALS_QUEUE)
 export class RentalsProcessor extends WorkerHost {
   constructor(private readonly rentalsService: RentalsService) {
     super();

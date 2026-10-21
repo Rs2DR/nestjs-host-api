@@ -105,6 +105,8 @@ export class RentalsService {
         RENTALS_EVENTS.ACTIVATED,
         new RentalActivatedEvent(rental.id, rental.endsAt),
       );
+
+      this.queueRentalReminder(rentalId);
     }
 
     return rental;
@@ -192,21 +194,6 @@ export class RentalsService {
 
     if (details.endsAt.getTime() <= Date.now()) return;
 
-    if (delay > 0) {
-      await this.rentalsQueue.add(
-        RENTALS_JOBS.REMIND,
-        { rentalId },
-        {
-          jobId: `rental-remind-recheck-${rentalId}-${Date.now()}`,
-          delay,
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 1000 },
-          removeOnComplete: true,
-        },
-      );
-      return;
-    }
-
     const tokens = await this.rentalsRepository.listDeviceTokens(
       details.userId,
     );
@@ -221,6 +208,7 @@ export class RentalsService {
           rentalId,
           serverId: details.serverId,
         },
+        delay,
       ),
     );
   }

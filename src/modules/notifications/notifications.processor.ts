@@ -10,8 +10,8 @@ import {
   NOTIFICATIONS_QUEUE,
 } from './notifications.constants.js';
 
-@Processor(NOTIFICATIONS_QUEUE)
 @Injectable()
+@Processor(NOTIFICATIONS_QUEUE)
 export class NotificationsProcessor extends WorkerHost {
   constructor(private readonly firebaseService: FirebaseService) {
     super();
