@@ -1,124 +1,115 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 NestJS Host API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS Host API — это масштабируемое RESTful backend-приложение, разработанное с использованием **NestJS** и **Drizzle ORM**. Проект представляет собой API для управления хостингом и арендой серверов. Включает в себя интеграцию со Stripe для обработки платежей, Firebase для push-уведомлений и систему очередей для фоновых задач.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🛠 Стек технологий
 
-## Description
+* **Фреймворк:** [NestJS](https://nestjs.com/)
+* **Язык программирования:** TypeScript
+* **ORM:** [Drizzle ORM](https://orm.drizzle.team/)
+* **База данных:** PostgreSQL (поднимается через Docker)
+* **Платежный шлюз:** Stripe API
+* **Уведомления:** Firebase (Push notifications)
+* **Тестирование:** [Vitest](https://vitest.dev/) (Unit & E2E)
+* **Контейнеризация:** Docker & Docker Compose
+* **Пакетный менеджер:** Yarn
+* **Линтинг/Форматирование:** Oxlint, Prettier
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📂 Структура проекта
 
-## Project setup
+Проект построен на основе строгой модульной архитектуры. Код разделен на слои: Контроллеры (Controllers), Сервисы (Services), Репозитории (Repositories) и DTO.
 
-```bash
-$ yarn install
-```
+* `src/modules/` — Бизнес-логика приложения:
+  * `auth/` — Авторизация и аутентификация пользователей.
+  * `users/` — Управление пользователями и их устройствами (регистрация устройств для FCM).
+  * `servers/` — Управление серверами и их слотами.
+  * `rentals/` — Логика аренды серверов (включает обработчики событий и очередей).
+  * `payments/` — Управление платежами и генерация Payment Intents.
+  * `notifications/` — Отправка уведомлений пользователям (через Firebase и очереди).
+  * `webhooks/` — Обработка вебхуков (например, от Stripe).
+* `src/infrastructure/` — Интеграции со сторонними сервисами и БД:
+  * `database/` — Схемы Drizzle ORM, конфигурация БД и скрипты сидирования (`seed.ts`).
+  * `firebase/` — Интеграция с Firebase SDK.
+  * `stripe/` — Интеграция со Stripe SDK.
+  * `queue/` — Настройка системы очередей (BullMQ).
+* `src/common/` — Общие декораторы, гарды (`auth.guard.ts`), константы и схемы валидации.
+* `src/config/` — Валидация переменных окружения и настройки приложения.
 
-## Compile and run the project
+## ⚙️ Предварительные требования
 
-```bash
-# development
-$ yarn run start
+Перед началом работы убедитесь, что у вас установлены следующие инструменты:
 
-# watch mode
-$ yarn run start:dev
+* [Node.js](https://nodejs.org/) (версия 18+ / LTS)
+* [Yarn](https://yarnpkg.com/)
+* [Docker](https://www.docker.com/) и Docker Compose
 
-# production mode
-$ yarn run start:prod
-```
+## 🚀 Установка и настройка
 
-## Run tests
+1. **Клонируйте репозиторий:**
+   ```bash
+   git clone <URL_ВАШЕГО_РЕПОЗИТОРИЯ>
+   cd nestjs-host-api
+   ```
 
-```bash
-# unit tests
-$ yarn run test
+2. **Установите зависимости:**
+   ```bash
+   yarn install
+   ```
 
-# e2e tests
-$ yarn run test:e2e
+3. **Настройте переменные окружения:**
+   Скопируйте файл примера конфигурации и заполните его вашими данными (ключи БД, Stripe, Firebase, JWT секреты и т.д.):
+   ```bash
+   cp .env.example .env
+   ```
 
-# test coverage
-$ yarn run test:cov
-```
+## 🐳 Запуск приложения
 
-## Deployment
+### Режим разработки (с Docker для инфраструктуры)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project:
+Чтобы поднять только необходимые сервисы (базу данных PostgreSQL, Redis для очередей и т.д.) без самого Node.js приложения:
 
 ```bash
-$ yarn install @nestjs/observe
+docker-compose -f docker-compose.dev-infra.yml up -d
 ```
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/overview) - it takes a single import and an app key.
+После того как база данных будет готова, запустите приложение локально:
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+```bash
+yarn start:dev
+```
 
-## Resources
+### Полный запуск через Docker Compose
 
-Check out a few resources that may come in handy when working with NestJS:
+Чтобы запустить и инфраструктуру, и само приложение в контейнерах:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+docker-compose up -d
+```
 
-## Support
+## 🗄 Управление базой данных
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Проект использует Drizzle ORM. Конфигурация находится в `drizzle.config.ts`, а миграции генерируются в папку `drizzle/`.
 
-## Stay in touch
+* **Применить миграции:**
+  ```bash
+  yarn db:push
+  # или yarn drizzle-kit push (в зависимости от ваших скриптов)
+  ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+* **Заполнить базу данных тестовыми данными (Seed):**
+  ```bash
+  yarn db:seed
+  # Этот скрипт выполняет код из src/infrastructure/database/seed.ts
+  ```
 
-## License
+## 📜 Доступные скрипты (Yarn)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+В файле `package.json` настроены следующие основные команды:
+
+* `yarn start:dev` — Запуск приложения в режиме разработки (watch mode).
+* `yarn build` — Сборка проекта (компиляция TypeScript в JavaScript).
+* `yarn start:prod` — Запуск собранного приложения из папки `dist/`.
+* `yarn test` — Запуск unit-тестов с помощью Vitest.
+* `yarn test:e2e` — Запуск E2E-тестов (находятся в директории `test/`).
+* `yarn lint` — Запуск линтера (Oxlint) для проверки кода.
+* `yarn format` — Форматирование кода с помощью Prettier.
